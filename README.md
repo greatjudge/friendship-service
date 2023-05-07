@@ -1,5 +1,4 @@
 # friendship-service
-# friendship-service
 ## Introduction
 
 This is the Implementation of a test assignment for an internship in VK. This backend is built using the Django web framework, and uses Django REST framework to provide a RESTful API for the friendship actions. Users can send, reject applications to friends, delete from friends, view lists of friends and applications.
