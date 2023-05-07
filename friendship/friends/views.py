@@ -32,11 +32,11 @@ class FriendshipDetail(APIView):
     def get(self, request, user_id: int):
         response_data = {'user_id': user_id,
                          'status': friend_status(request.user,
-                                                 user_id)[0]}
+                                                 user_id)[0].value}
         return Response(data=response_data)
 
     def delete(self, request, user_id: int):
-        friend = get_object_or_404(request.user.friends, friend__id=user_id)
+        friend = get_object_or_404(request.user.friends, id=user_id)
         stop_being_friends(request.user, friend)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -45,21 +45,29 @@ class FriendRequestList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        incoming_ser = FriendRequestSerializer(request.user.outgoing_requests.all(),
+        incoming_ser = FriendRequestSerializer(request.user.incoming_requests.all(),
                                                many=True)
-        outgoing_ser = FriendRequestSerializer(request.user.incoming_requests.all(),
+        outgoing_ser = FriendRequestSerializer(request.user.outgoing_requests.all(),
                                                many=True)
         return Response({'incoming': incoming_ser.data,
                          'outgoing': outgoing_ser.data})
 
     def post(self, request):
         other_user = request.data.get('user_to')
-        if other_user is None or other_user.isdigit():
+        if other_user is None or not other_user.isdigit():
             return Response(status=status.HTTP_400_BAD_REQUEST,
                             data={'user_to': {'message':
-                                                  'user_to must be integer id of existing user'
+                                                  'user_to is required integer id'
+                                              }
+                                  }
+                            )
+        other_user_id = int(other_user)
+        if other_user_id == request.user.id:
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data={'user_to': {'message':
+                                                  'user cant send request to self'
                                               }})
-        other_user = get_object_or_404(User, id=other_user)
+        other_user = get_object_or_404(User, id=int(other_user))
         fr_status, obj = friend_status(request.user, other_user)
         match fr_status:
             case FriendStatus.FRIEND:

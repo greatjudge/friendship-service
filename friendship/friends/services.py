@@ -30,8 +30,8 @@ def friend_status(first_user: User,
                   second_user: User | int) -> tuple[FriendStatus, None | QuerySet]:
     second_user_id = second_user if isinstance(second_user, int) else second_user.id
     friends = first_user.friends.filter(id=second_user_id)
-    incoming_req = first_user.outgoing_requests.filter(user_to=second_user)
-    outgoing_req = first_user.incoming_requests.filter(user_from=second_user)
+    incoming_req = first_user.incoming_requests.filter(user_from=second_user)
+    outgoing_req = first_user.outgoing_requests.filter(user_to=second_user)
     if friends:
         return FriendStatus.FRIEND, None
     if incoming_req:

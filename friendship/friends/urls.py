@@ -9,14 +9,14 @@ from .views import (
 
 
 urlpatterns = [
-    path("", FriendsList.as_view(), name='friend list'),
-    path('<int:pk>/', FriendshipDetail.as_view(), name='friendship'),
+    path("", FriendsList.as_view(), name='friend_list'),
+    path('<int:user_id>/', FriendshipDetail.as_view(), name='friendship'),
     path('friend_requests/',
          FriendRequestList.as_view(),
-         name='friend request list'),
+         name='friend_request_list'),
     path('friend_requests/<int:user_to>/',
          FriendRequestDetail.as_view(),
-         name='friend requests'),
+         name='friend_requests'),
     path('friend_requests/accepter/<int:user_from>/',
          FriendRequestAccepter.as_view(),
          name='friend requests')
