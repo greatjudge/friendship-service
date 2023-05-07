@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: api for friendship
+  description: ''
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: http://localhost/
+paths:
+  /users/register/:
+    post:
+      description: register user
+      responses:
+        '201':
+          description: friend request created
+        '409':
+          description: an username already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user_register'
+        description: user to create
+  /friends/:
+    get:
+      description: returns all friends of authenticated user
+      responses:
+        "200":
+          description: "A list of friends"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/friend"
+  /friends/{user_id}/:
+    parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+        description: id of the user
+    get:
+      description: returns status of friendship with user_id
+      responses:
+        "200":
+          description: friendship status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/friendship_status"
+    delete:
+      description: remove user_id from friends of user
+      responses:
+        '204':
+          description: user_id is removed from friends of user
+        '404':
+          description: user_id is not friend of user
+  /friends/friend_requests/:
+    get:
+      description: view the list of outgoing and incoming requests of authed user
+      responses:
+        "200":
+          description: "A list of requests" ## поменять
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/friend_request" # поменять
+        "404":
+          description: user cant get friends of user with user_id
+    post:
+      description: "Create friend request from user to user_to"
+      responses:
+        '201':
+          description: friend request created
+        '200':
+          description: an friend request already exists
+        '204':
+          description: auto accept request from user
+        '409':
+          description: users are friends
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/friend_request'
+        description: Friend request to add
+  /friends/friend_requests/{user_to}:
+    parameters:
+      - in: path
+        name: user_to
+        schema:
+          type: integer
+        required: true
+        description: the id of the user to whom the friend request is sent
+    get:
+      description: return friend request to user_to
+      responses:
+        '200':
+          description: friend request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/friend_request'
+        '404':
+          description: friend request not found
+    delete:
+      description: delete user friend request to user_to
+      responses:
+        '204':
+          description: friend request is deleted
+        '404':
+          description: friend request not found
+  /friends/friend_requests/accepter/{user_from}:
+    parameters:
+      - in: path
+        name: user_from
+        schema:
+          type: integer
+        required: true
+        description: the id of the user who sent the friend request
+    post:
+      description: accept friend request from user
+      responses:
+        '201':
+          description: friend request is accepted
+        '404':
+          description: an friend request does not exist
+    patch:
+      description: reject friend request from user
+      responses:
+        '204':
+          description: friend request is rejected
+        '404':
+          description: an friend request does not exist
+components:
+  schemas:
+    user_register:
+      type: object
+      required:
+        - username
+        - password
+        - password2
+      properties:
+        username:
+          type: string
+          example: dungeonmaster001
+        password:
+          type: string
+          format: password
+        password2:
+          type: string
+          format: password
+    friend:
+      type: object
+      required:
+        - id
+        - username
+      properties:
+        id:
+          type: integer
+          example: 32
+        username:
+          type: string
+          example: dungeonmaster001
+    friend_request:
+      type: object
+      required:
+         - user_to
+      properties:
+        user_to:
+          type: integer
+        user_from:
+          type: integer
+        status:
+          type: string
+          enum:
+            - consideration
+            - reject
+    friendship_status:
+      type: object
+      required:
+        - user_id
+        - status
+      properties:
+        user_id:
+          type: integer
+          example: 32
+        status:
+          type: string
+          enum:
+            - nothing
+            - friend
+            - incoming_request
+            - outgoing_request
