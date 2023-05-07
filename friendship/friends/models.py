@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 
 User = get_user_model()
@@ -20,3 +21,7 @@ class FriendRequest(models.Model):
                                   on_delete=models.CASCADE,
                                   related_name='outgoing_requests')
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.CONS)
+
+    def clean(self):
+        if self.user_to == self.user_from:
+            raise ValidationError('user_to and user_from should be different')

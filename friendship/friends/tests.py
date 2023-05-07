@@ -4,7 +4,6 @@ from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from .models import FriendRequest
 from .serializers import FriendRequestSerializer
-from collections import OrderedDict
 
 
 User = get_user_model()
@@ -129,18 +128,13 @@ class TestFriendRequestSend(APITestCase):
         resp = self.client.post(reverse('friend_request_list'),
                                 data=data)
         self.assertEqual(resp.status_code, 400)
-        self.assertEqual(resp.data['user_to']['message'],
-                         'user cant send request to self')
-
-    def test_user_to_is_not_provide(self):
-        pass
 
     def test_send_to_not_existing_user(self):
         self.client.force_authenticate(self.user1)
         data = {'user_to': 155}
         resp = self.client.post(reverse('friend_request_list'),
                                 data=data)
-        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(resp.status_code, 400)
 
     def test_users_are_friends(self):
         self.user1.friends.add(self.user2)
@@ -171,8 +165,86 @@ class TestFriendRequestSend(APITestCase):
 
 
 class TestFriendRequestDetail(APITestCase):
-    pass
+    @classmethod
+    def setUpTestData(cls):
+        cls.user1 = User.objects.create(username='testuser1')
+        cls.user1.set_password('testuser123')
+        cls.user2 = User.objects.create(username='testuser2')
+        cls.user2.set_password('testuser123')
+
+    def test_get_request(self):
+        friend_req = FriendRequest.objects.create(user_to=self.user2,
+                                                  user_from=self.user1)
+        self.client.force_authenticate(self.user1)
+        resp = self.client.get(reverse('friend_requests_detail',
+                                       args=(self.user2.id,)))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.data,
+                         FriendRequestSerializer(friend_req).data)
+
+    def test_get_not_exists(self):
+        user = User.objects.create(username='testuser_notexist')
+        self.client.force_authenticate(self.user1)
+        resp = self.client.get(reverse('friend_requests_detail',
+                                       args=(user.id,)))
+        self.assertEqual(resp.status_code, 404)
+
+    def test_delete_request(self):
+        friend_req = FriendRequest.objects.create(user_to=self.user2,
+                                                  user_from=self.user1)
+        self.client.force_authenticate(self.user1)
+        resp = self.client.delete(reverse('friend_requests_detail',
+                                          args=(self.user2.id,)))
+        self.assertEqual(resp.status_code, 204)
+        self.assertSequenceEqual(FriendRequest.objects.filter(user_from=self.user1,
+                                                              user_to=self.user2),
+                                 [])
+
+    def test_cant_delete_notself_req(self):
+        user = User.objects.create(username='testtest_user')
+        friend_req = FriendRequest.objects.create(user_to=self.user2,
+                                                  user_from=user)
+        self.client.force_authenticate(self.user1)
+        resp = self.client.delete(reverse('friend_requests_detail',
+                                          args=(self.user2.id,)))
+        self.assertEqual(resp.status_code, 404)
 
 
 class TestFriendRequestAccepter(APITestCase):
-    pass
+    @classmethod
+    def setUpTestData(cls):
+        cls.user1 = User.objects.create(username='testuser1')
+        cls.user1.set_password('testuser123')
+        cls.user2 = User.objects.create(username='testuser2')
+        cls.user2.set_password('testuser123')
+
+    def test_accept_request(self):
+        freq = FriendRequest.objects.create(user_from=self.user2,
+                                            user_to=self.user1)
+        self.client.force_authenticate(self.user1)
+        resp = self.client.post(reverse('friend_requests_accepter',
+                                          args=(self.user2.id,)))
+        self.assertEqual(resp.status_code, 204)
+        self.assertSequenceEqual(
+            FriendRequest.objects.filter(user_from=self.user2,
+                                         user_to=self.user1).all(),
+            []
+        )
+        self.assertSequenceEqual(
+            FriendRequest.objects.filter(user_from=self.user1,
+                                         user_to=self.user2).all(),
+            []
+        )
+        self.assertIn(self.user1, self.user2.friends.all())
+        self.assertIn(self.user2, self.user1.friends.all())
+
+    def test_reject_req(self):
+        freq = FriendRequest.objects.create(user_from=self.user2,
+                                            user_to=self.user1)
+        self.client.force_authenticate(self.user1)
+        resp = self.client.patch(reverse('friend_requests_accepter',
+                                        args=(self.user2.id,)))
+        self.assertEqual(resp.status_code, 204)
+        freq = FriendRequest.objects.get(user_from=self.user2,
+                                            user_to=self.user1)
+        self.assertEqual(freq.status, FriendRequest.Status.REJ)

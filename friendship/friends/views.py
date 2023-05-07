@@ -53,21 +53,11 @@ class FriendRequestList(APIView):
                          'outgoing': outgoing_ser.data})
 
     def post(self, request):
-        other_user = request.data.get('user_to')
-        if other_user is None or not other_user.isdigit():
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={'user_to': {'message':
-                                                  'user_to is required integer id'
-                                              }
-                                  }
-                            )
-        other_user_id = int(other_user)
-        if other_user_id == request.user.id:
-            return Response(status=status.HTTP_400_BAD_REQUEST,
-                            data={'user_to': {'message':
-                                                  'user cant send request to self'
-                                              }})
-        other_user = get_object_or_404(User, id=int(other_user))
+        data = request.data.copy()
+        data['user_from'] = self.request.user.id
+        ser = FriendRequestSerializer(data=data)
+        ser.is_valid(raise_exception=True)
+        other_user = ser.validated_data['user_to']
         fr_status, obj = friend_status(request.user, other_user)
         match fr_status:
             case FriendStatus.FRIEND:
@@ -124,6 +114,7 @@ class FriendRequestAccepter(APIView):
         friend_request = get_object_or_404(FriendRequest,
                                            user_from=other_user,
                                            user_to=request.user)
-        friend_request.status = FriendRequest.Status.REJ
-        friend_request.save()
+        if friend_request.status != FriendRequest.Status.REJ:
+            friend_request.status = FriendRequest.Status.REJ
+            friend_request.save()
         return Response(status=status.HTTP_204_NO_CONTENT)

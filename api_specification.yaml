@@ -62,11 +62,11 @@ paths:
       description: view the list of outgoing and incoming requests of authed user
       responses:
         "200":
-          description: "A list of requests" ## поменять
+          description: "A list of requests"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/friend_request" # поменять
+                $ref: "#/components/schemas/friend_request_list"
         "404":
           description: user cant get friends of user with user_id
     post:
@@ -178,6 +178,17 @@ components:
           enum:
             - consideration
             - reject
+    friend_request_list:
+      type: object
+      properties:
+        incoming:
+          type: array
+          items:
+            $ref: '#/components/schemas/friend_request'
+        outgoing:
+          type: array
+          items:
+            $ref: '#/components/schemas/friend_request'
     friendship_status:
       type: object
       required:

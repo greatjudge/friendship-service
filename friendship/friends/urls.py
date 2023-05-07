@@ -16,8 +16,8 @@ urlpatterns = [
          name='friend_request_list'),
     path('friend_requests/<int:user_to>/',
          FriendRequestDetail.as_view(),
-         name='friend_requests'),
+         name='friend_requests_detail'),
     path('friend_requests/accepter/<int:user_from>/',
          FriendRequestAccepter.as_view(),
-         name='friend requests')
+         name='friend_requests_accepter')
 ]
