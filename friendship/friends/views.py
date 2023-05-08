@@ -30,9 +30,10 @@ class FriendshipDetail(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, user_id: int):
+        other_user = get_object_or_404(User, id=user_id)
         response_data = {'user_id': user_id,
                          'status': friend_status(request.user,
-                                                 user_id)[0].value}
+                                                 other_user)[0].value}
         return Response(data=response_data)
 
     def delete(self, request, user_id: int):
@@ -117,7 +118,9 @@ class FriendRequestAccepter(APIView):
         if friend_request.status != FriendRequest.Status.REJ:
             friend_request.status = FriendRequest.Status.REJ
             friend_request.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        ser = FriendRequestSerializer(friend_request)
+        return Response(status=status.HTTP_204_NO_CONTENT,
+                        data=ser.data)
 
     def delete(self, request, user_from: int):
         other_user = get_object_or_404(User, id=user_from)

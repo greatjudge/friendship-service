@@ -13,6 +13,12 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = (AllowAny,)
 
 
+class UserList(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+
+
 class UserDetail(generics.RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)

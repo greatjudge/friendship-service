@@ -51,6 +51,11 @@ class FriendShip(APITestCase):
             self.assertEqual({'user_id': self.nothing_user.id,
                               'status': 'nothing'},
                              resp.json())
+    def test_get_status_user_not_exist(self):
+        self.client.force_authenticate(self.user1)
+        resp = self.client.get(reverse('friendship',
+                                       args=(123143,)))
+        self.assertEqual(resp.status_code, 404)
 
     def test_remove_friend(self):
         friend = User.objects.create(username='testuserfriend')
@@ -196,6 +201,7 @@ class TestFriendRequestDetail(APITestCase):
         resp = self.client.delete(reverse('friend_requests_detail',
                                           args=(self.user2.id,)))
         self.assertEqual(resp.status_code, 204)
+        self.assertIsNone(resp.data)
         self.assertSequenceEqual(FriendRequest.objects.filter(user_from=self.user1,
                                                               user_to=self.user2),
                                  [])
@@ -248,6 +254,8 @@ class TestFriendRequestAccepter(APITestCase):
         freq = FriendRequest.objects.get(user_from=self.user2,
                                             user_to=self.user1)
         self.assertEqual(freq.status, FriendRequest.Status.REJ)
+        self.assertEqual(FriendRequestSerializer(freq).data,
+                         resp.data)
 
     def test_delete_req(self):
         freq = FriendRequest.objects.create(user_from=self.user2,

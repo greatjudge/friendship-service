@@ -43,7 +43,7 @@ After starting server you can make requests to it.
 
 #### 1. Registration.
 ```commandline
-POST /users/register
+POST /users/register/
 
 Headers:
 Content-Type: application/json
@@ -88,9 +88,9 @@ Headers:
 Authorization: Basic <base64_encoded_credentials>
 ```
 
-#### 6. Create friend request.
+#### 6. Send friend request to user with id 4
 ```commandline
-POST /users/register
+POST /users/register/
 
 Headers:
 Content-Type: application/json
@@ -104,15 +104,15 @@ Request Body:
 
 #### 7. Get friend request to user 4.
 ```commandline
-GET /friends/friend_requests/4
+GET /friends/friend_requests/4/
 
 Headers:
 Authorization: Basic <base64_encoded_credentials>
 ```
 
-#### 8. Get friend request to user with id 4
+#### 8. DELETE friend request to user with id 4
 ```commandline
-DELETE /friends/friend_requests/4
+DELETE /friends/friend_requests/4/
 
 Headers:
 Authorization: Basic <base64_encoded_credentials>
@@ -120,7 +120,7 @@ Authorization: Basic <base64_encoded_credentials>
 
 #### 9. Accept friend request from user with id 4
 ```commandline
-POST /friends/friend_requests/accepter/4
+POST /friends/friend_requests/accepter/4/
 
 Headers:
 Authorization: Basic <base64_encoded_credentials>
@@ -128,7 +128,7 @@ Authorization: Basic <base64_encoded_credentials>
 
 #### 10. Reject friend request from user with id 4
 ```commandline
-PATCH /friends/friend_requests/accepter/4
+PATCH /friends/friend_requests/accepter/4/
 
 Headers:
 Authorization: Basic <base64_encoded_credentials>
@@ -136,7 +136,7 @@ Authorization: Basic <base64_encoded_credentials>
 
 #### 11. Delete friend request from user with id 4
 ```commandline
-DELETE /friends/friend_requests/accepter/4
+DELETE /friends/friend_requests/accepter/4/
 
 Headers:
 Authorization: Basic <base64_encoded_credentials>
