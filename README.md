@@ -23,7 +23,9 @@ To run this backend, you will need to have the following installed on your syste
 
 Or you can use `docker-compose.yml`
 
-## Usage
+## Run server
 To start the server, run the following command: `python manage.py runserver`.  
 The server will start running at `http://localhost:8000/`.
 
+## Usage Examples
+After starting server you can make requests to it.
