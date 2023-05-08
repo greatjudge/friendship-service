@@ -58,7 +58,7 @@ Headers:
 Authorization: Basic <base64_encoded_credentials>
 ```
 
-#### 3. Get friendship with user_id 4.
+#### 3. Get friendship status with user_id 4.
 ```commandline
 GET /friends/4
 
