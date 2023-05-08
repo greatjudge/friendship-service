@@ -25,16 +25,18 @@ Or you can use `docker-compose.yml`
 
 ## Run server
 ##### using manage.py.
-To start the server, run the following command: `python manage.py runserver`.  
-The server will start running at `http://localhost:8000/`.
+1. To start the server, run the following command: `python manage.py runserver`.  
+2. The server will start running at `http://localhost:8000/`.
 
 ##### using `Dockerfile`.
 1. Build image: `docker build -t friendship:1.0 .`
 2. Run conrainer and server on 127.0.0.1:8000: `docker run -it --rm -p 127.0.0.1:8000:8000 friendship:1.0`.  
 --rm delete container after stop and it is not necessary.
+3. The server will start running at `http://localhost:8000/`.
 
 ##### using docker compose.
 1. run command `docker compose up`
+2. The server will start running at `http://friendship.localhost`.
 
 ## Usage Examples
 After starting server you can make requests to it.
