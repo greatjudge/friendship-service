@@ -11,11 +11,11 @@ If you want use sqlite you can just remove the lines startswith "DB_". Dont forg
 4.  Create `.env` file in friendship-service with the contents like in example_.env.db
 
 #### without docker
-3. Create a virtual environment: `python3 -m venv env`.
-4. Activate the virtual environment: `source env/bin/activate`.
-5. Install the dependencies: `python -m pip install -r requirements.txt`.
-6. Dont remember to set django secter key. You can create the file .env in the same folder with manage.py and write to it `DJANGO_SECRET_KEY`="...(this key)...". There is example of .env file: `example_.env`.
-7. Run the database migrations: `python manage.py migrate`.
+4. Create a virtual environment: `python3 -m venv env`.
+5. Activate the virtual environment: `source env/bin/activate`.
+6. Install the dependencies: `python -m pip install -r requirements.txt`.
+7. Dont remember to set django secter key. You can create the file .env in the same folder with manage.py and write to it `DJANGO_SECRET_KEY`="...(this key)...". There is example of .env file: `example_.env`.
+8. Run the database migrations: `python manage.py migrate`.
 
 ## Run server
 #### using manage.py.
