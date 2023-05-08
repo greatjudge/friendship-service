@@ -118,3 +118,11 @@ class FriendRequestAccepter(APIView):
             friend_request.status = FriendRequest.Status.REJ
             friend_request.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def delete(self, request, user_from: int):
+        other_user = get_object_or_404(User, id=user_from)
+        friend_request = get_object_or_404(FriendRequest,
+                                           user_from=other_user,
+                                           user_to=request.user)
+        friend_request.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

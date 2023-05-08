@@ -1,4 +1,5 @@
 from enum import Enum
+from django.db import transaction
 from django.db.models import QuerySet
 from django.contrib.auth import get_user_model
 from .models import FriendRequest
@@ -17,8 +18,9 @@ class FriendStatus(Enum):
 def make_friends(first_user: User,
                  second_user: User,
                  friend_request: FriendRequest):
-    first_user.friends.add(second_user)
-    friend_request.delete()
+    with transaction.atomic():
+        first_user.friends.add(second_user)
+        friend_request.delete()
 
 
 def stop_being_friends(first_user: User,

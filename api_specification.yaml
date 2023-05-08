@@ -134,6 +134,13 @@ paths:
           description: friend request is rejected
         '404':
           description: an friend request does not exist
+    delete:
+      description: delete friend request from user
+      responses:
+        '204':
+          description: friend request is deleted
+        '404':
+          description: an friend request does not exist
 components:
   schemas:
     user_register:

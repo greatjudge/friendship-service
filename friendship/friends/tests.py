@@ -248,3 +248,18 @@ class TestFriendRequestAccepter(APITestCase):
         freq = FriendRequest.objects.get(user_from=self.user2,
                                             user_to=self.user1)
         self.assertEqual(freq.status, FriendRequest.Status.REJ)
+
+    def test_delete_req(self):
+        freq = FriendRequest.objects.create(user_from=self.user2,
+                                            user_to=self.user1)
+        self.client.force_authenticate(self.user1)
+        resp = self.client.delete(reverse('friend_requests_accepter',
+                                         args=(self.user2.id,)))
+        self.assertEqual(resp.status_code, 204)
+        self.assertSequenceEqual(
+            FriendRequest.objects.filter(
+                user_from=self.user2,
+                user_to=self.user1
+            ),
+            []
+        )
