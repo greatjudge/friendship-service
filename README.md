@@ -29,7 +29,7 @@ The server will start running at `http://localhost:8000/`.
 
 Or you can use `Dockerfile`
 1. Build image: `docker build -t friendship:1.0 .`
-2. Run conrainer and server on 127.0.0.1:8000: `docker run -it --rm -p 127.0.0.1:8000:8000 friendship:1.0`.
+2. Run conrainer and server on 127.0.0.1:8000: `docker run -it --rm -p 127.0.0.1:8000:8000 friendship:1.0`.  
 --rm delete container after stop and it is not necessary.
 
 ## Usage Examples
