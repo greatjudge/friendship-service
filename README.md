@@ -84,7 +84,7 @@ Authorization: Basic <base64_encoded_credentials>
 
 #### 6. Send friend request to user with id 4
 ```commandline
-POST /users/register/
+POST /friends/friend_requests/4/
 
 Headers:
 Content-Type: application/json
